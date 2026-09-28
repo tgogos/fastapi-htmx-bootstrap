@@ -1,6 +1,6 @@
 # Engineering notes
 
-Decisions for this starter. Prefer simple, robust, boring.
+Decisions for this boilerplate. Prefer simple, robust, boring.
 
 This file is the source of truth for architecture and conventions. When a decision or the code changes, update this document in the same change so it stays accurate for future readers (and agents). Do not refer to chat threads, option letters, or temporary debate labels.
 
@@ -22,7 +22,7 @@ Prefer boring, server-driven UI over client frameworks. Concrete HTMX usage is u
 | **Server owns the truth** | Pages and HTMX fragments are the UI. Do not grow a client-side app store or SPA router. |
 | **HTML first** | First paint and list/filter/mutation flows are server-rendered HTML (Jinja + the Bootstrap admin shell). |
 | **HTMX for interaction** | Search, filters, pagination, and forms use HTMX swaps. |
-| **Small JS islands** | Vanilla JS only where the browser must own a bit of widget state (confirm modal, toasts, CSRF header on HTMX). Prefer one focused script (`app/web/static/js/app.js`). |
+| **Small JS islands** | Vanilla JS only where the browser must own a bit of widget state (confirm modal, toasts, CSRF header, page-size select). Prefer one focused script (`app/web/static/js/app.js`). |
 | **Progressive enhancement** | Pagination links keep usable `href`s; forms still work without JS where practical. |
 | **Shareable URLs** | List/search use `hx-push-url`. |
 
@@ -38,11 +38,11 @@ Use an island when interaction is inherently client-side (dialog, toast DOM, att
 
 ### Admin shell
 
-The browser UI is the Bootstrap 5 admin shell from the static starter (navbar, sidebar, footer, colour mode / palette / profile). Vendored CSS and JS live under `app/web/static/` (`vendor/bootstrap`, `vendor/bootstrap-icons`, `vendor/chart.js`, plus `css/` and `js/`). There is no Sass or npm build.
+The browser UI is a Bootstrap 5 admin shell (navbar, sidebar, footer, colour mode / palette / profile). Vendored CSS and JS live under `app/web/static/` (`vendor/bootstrap`, `vendor/bootstrap-icons`, `vendor/chart.js`, plus `css/` and `js/`). There is no Sass or npm build.
 
 `templates/layout.html` is the shell. Shared pieces are `partials/navbar.html`, `partials/sidebar.html`, and `partials/footer.html`. Operational pages extend the layout and replace only `{% block content %}`. Header and sidebar specimen pages keep their own chrome (`templates/gallery/`) because that chrome is the specimen; they still include the shared sidebar or navbar.
 
-The sidebar has two groups. **App** is the product: Dashboard, Books, Search books, and Staff (`/ui/admin/users`, admin only). **Samples** is the original Bootstrap page set (users, forms, tables, components, cheatsheet, settings, blank, headers, sidebars). Sample pages are copy sources, not the books domain. The Users sample stays separate from Staff. Move a link from Samples to App when that page starts reading or writing application data.
+The sidebar has two groups. **App** is the product: Dashboard, Books, Search books, and Staff (`/ui/admin/users`, admin only). **Samples** is the Bootstrap page set kept as UI copy sources (users, forms, tables, components, cheatsheet, settings, blank, headers, sidebars). Sample pages are not the product. The Users sample stays separate from Staff. Move a link from Samples to App when that page starts reading or writing application data.
 
 `app/web/static/css/admin.css` stays the shell layout file. `app/web/static/css/app.css` is the HTMX indicator plus the books table sort caret. `app/web/static/js/admin.js` is the shell (theme, palette, profile, hash nav, form validation), with hash highlighting keyed off the `/ui/...` path instead of `*.html` filenames. `app/web/static/js/app.js` is the HTMX island (Bootstrap confirm modal, toasts, CSRF header, page-size select).
 
@@ -56,9 +56,9 @@ To add a page: copy `templates/pages/blank.html`, add a row to `SHELL_PAGES` in 
 | `/items` (in-memory) | Minimal teaching CRUD — no auth, no UI |
 | `/db-items` (MongoDB) | Optional NoSQL demo — removable |
 
-Do not add auth, HTMX, or shared abstractions to the memory/Mongo demos unless the point is to teach that idea. Keep demos thin on purpose.
+Do not add auth, HTMX, or shared abstractions to the memory/Mongo demos unless the point is to teach that idea. Keep demos thin on purpose. `/items` and `/db-items` teach storage. Delete them when a fork does not need them.
 
-The primary domain entity is **books**. Demo routes keep the thin **Item** CRUD naming (`/items`, `/db-items`) on purpose — they teach storage, not a second books product.
+Books is the reference domain in this repo, not a requirement of every fork. Copy `app/routes/books.py`, `app/db/books.py`, and `app/web/books_routes.py` for the next entity, then replace books. Keep the URL split (`/api`, `/auth`, `/ui`), session/CSRF, Bearer tokens, roles, and the list contract (`page`, `size`, allowlisted `ordering`, `innerHTML` swaps). Demo routes keep the thin **Item** naming so they are not a second product.
 
 ## Roles
 
@@ -169,7 +169,7 @@ Do not log passwords, session cookies, Bearer tokens, or CSRF secrets. Examples:
 
 ## Schema / local SQLite
 
-`CREATE TABLE IF NOT EXISTS` does not migrate existing databases. Startup runs a small additive migrate for new `books` columns when missing; for larger shape changes, delete local `data/*.db` (and test DBs) and restart. The starter prefers recreate / tiny ALTER helpers over Alembic.
+`CREATE TABLE IF NOT EXISTS` does not migrate existing databases. Startup runs a small additive migrate for new `books` columns when missing; for larger shape changes, delete local `data/*.db` (and test DBs) and restart. Prefer recreate / tiny ALTER helpers over Alembic.
 
 ## Non-negotiables
 

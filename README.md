@@ -47,7 +47,7 @@ uv run pytest
 
 ## UI
 
-The shell is `app/web/templates/layout.html` (navbar, sidebar, footer). Specimen pages from the static admin starter keep their content and routes:
+The shell is `app/web/templates/layout.html` (navbar, sidebar, footer). Sample pages keep their own routes:
 
 | Page | Path |
 |------|------|
