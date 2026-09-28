@@ -26,12 +26,22 @@ from app.auth.users import (
 )
 from app.db import books as books_repo
 from app.db.books import BOOK_CATEGORIES, normalize_category
+from app.web.pagination import DEFAULT_PAGE_SIZE, PAGE_SIZES, page_size, sort_column_state
 from app.web.paths import TEMPLATES_DIR
 
 router = APIRouter()
 templates = Jinja2Templates(directory=str(TEMPLATES_DIR))
+templates.env.globals["sort_column_state"] = sort_column_state
 
-DEFAULT_PAGE_SIZE = 10
+SORT_COLUMNS = (
+    "title",
+    "author",
+    "category",
+    "year",
+    "page_count",
+    "available",
+    "added_by",
+)
 
 CATEGORY_LABELS: dict[str, str] = {
     "fiction": "Fiction",
@@ -89,11 +99,18 @@ def _parse_available_form(raw: str | None) -> bool | None:
     return None
 
 
+def _toggle_order(current: str, column: str) -> str:
+    if current == column:
+        return f"-{column}"
+    return column
+
+
 def _books_list_url(
     base: str,
     *,
     page: int,
     size: int,
+    ordering: str,
     q: str | None = None,
     category: str | None = None,
     available: str | None = None,
@@ -101,7 +118,11 @@ def _books_list_url(
     year_min: int | None = None,
     year_max: int | None = None,
 ) -> str:
-    params: dict[str, str | int] = {"page": page, "size": size}
+    params: dict[str, str | int] = {
+        "page": page,
+        "size": size,
+        "ordering": ordering,
+    }
     if q:
         params["q"] = q
     if category:
@@ -152,6 +173,7 @@ async def _books_page_data(
     base_path: str,
     page: int,
     size: int,
+    ordering: str | None = None,
     q: str | None = None,
     category: str | None = None,
     available: str | None = None,
@@ -160,23 +182,51 @@ async def _books_page_data(
     year_min: int | None = None,
     year_max: int | None = None,
 ) -> dict:
+    size = page_size(size)
+    ordering = books_repo.normalize_ordering(ordering)
     avail = _parse_available_form(available)
     cat = category if category in BOOK_CATEGORIES else None
-    rows, total = await books_repo.list_books(
-        page=page,
-        size=size,
-        q=q,
-        category=cat,
-        available=avail,
-        added_by_user_id=added_by_user_id,
-        year_min=year_min,
-        year_max=year_max,
-    )
-    pages = books_repo.total_pages(total, size)
+
+    async def _load(page_num: int) -> tuple[list, int, int]:
+        rows, total = await books_repo.list_books(
+            page=page_num,
+            size=size,
+            q=q,
+            category=cat,
+            available=avail,
+            added_by_user_id=added_by_user_id,
+            year_min=year_min,
+            year_max=year_max,
+            ordering=ordering,
+        )
+        pages = books_repo.total_pages(total, size)
+        return rows, total, pages
+
+    rows, total, pages = await _load(page)
+    if pages and page > pages:
+        page = pages
+        rows, total, pages = await _load(page)
+
+    def href(**overrides: object) -> str:
+        kwargs = {
+            "page": page,
+            "size": size,
+            "ordering": ordering,
+            "q": q,
+            "category": cat,
+            "available": available,
+            "added_by_user_id": added_by_user_id,
+            "year_min": year_min,
+            "year_max": year_max,
+        }
+        kwargs.update(overrides)
+        return _books_list_url(base_path, **kwargs)  # type: ignore[arg-type]
+
     return_to = "search" if base_path.rstrip("/").endswith("/search") else "list"
     results_params: dict[str, str | int] = {
         "page": page,
         "size": size,
+        "ordering": ordering,
         "return_to": return_to,
     }
     if q:
@@ -205,7 +255,14 @@ async def _books_page_data(
         "total": total,
         "page": page,
         "size": size,
+        "page_sizes": PAGE_SIZES,
         "total_pages": pages,
+        "ordering": ordering,
+        "sort_urls": {
+            col: href(page=1, ordering=_toggle_order(ordering, col))
+            for col in SORT_COLUMNS
+        },
+        "size_urls": {n: href(page=1, size=n) for n in PAGE_SIZES},
         "q": q or "",
         "category": cat or "",
         "available": available or "any",
@@ -216,36 +273,10 @@ async def _books_page_data(
         "results_query": urlencode(results_params),
         "active_filters": chips,
         "show_filter_summary": base_path.rstrip("/").endswith("/search"),
-        "prev_url": (
-            _books_list_url(
-                base_path,
-                page=page - 1,
-                size=size,
-                q=q,
-                category=cat,
-                available=available,
-                added_by_user_id=added_by_user_id,
-                year_min=year_min,
-                year_max=year_max,
-            )
-            if page > 1
-            else None
-        ),
-        "next_url": (
-            _books_list_url(
-                base_path,
-                page=page + 1,
-                size=size,
-                q=q,
-                category=cat,
-                available=available,
-                added_by_user_id=added_by_user_id,
-                year_min=year_min,
-                year_max=year_max,
-            )
-            if pages and page < pages
-            else None
-        ),
+        "first_url": href(page=1) if page > 1 else None,
+        "prev_url": href(page=page - 1) if page > 1 else None,
+        "next_url": href(page=page + 1) if pages and page < pages else None,
+        "last_url": href(page=pages) if pages and page < pages else None,
     }
 
 
@@ -304,9 +335,16 @@ async def books_page(
     user: dict = Depends(require_user_html),
     page: int = Query(1, ge=1),
     size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=100),
+    ordering: str | None = Query(None),
     q: str | None = Query(None),
 ):
-    data = await _books_page_data(base_path="/ui/books", page=page, size=size, q=q)
+    data = await _books_page_data(
+        base_path="/ui/books",
+        page=page,
+        size=size,
+        ordering=ordering,
+        q=q,
+    )
     template = (
         "partials/books_table.html"
         if request.headers.get("HX-Request") == "true"
@@ -321,6 +359,7 @@ async def books_search_page(
     user: dict = Depends(require_user_html),
     page: int = Query(1, ge=1),
     size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=100),
+    ordering: str | None = Query(None),
     q: str | None = Query(None),
     category: str | None = Query(None),
     available: str | None = Query(None),
@@ -347,6 +386,7 @@ async def books_search_page(
         base_path="/ui/books/search",
         page=page,
         size=size,
+        ordering=ordering,
         q=q,
         category=category,
         available=available,
@@ -383,9 +423,10 @@ async def create_book(
     isbn: str = Form(""),
     page_count: str = Form(""),
     available: str | None = Form(None),
-    page: int = Query(1, ge=1),
-    size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=100),
-    q: str | None = Query(None),
+    page: int = Form(1),
+    size: int = Form(DEFAULT_PAGE_SIZE),
+    ordering: str = Form(""),
+    q: str = Form(""),
 ):
     # Unchecked checkbox omits the field → treat as unavailable.
     payload, form_error = _parse_book_form(
@@ -412,7 +453,13 @@ async def create_book(
         )
         page = 1
 
-    data = await _books_page_data(base_path="/ui/books", page=page, size=size, q=q)
+    data = await _books_page_data(
+        base_path="/ui/books",
+        page=page,
+        size=size,
+        ordering=ordering or None,
+        q=q or None,
+    )
     return templates.TemplateResponse(
         request,
         "partials/books_table.html",
@@ -552,6 +599,7 @@ async def delete_book(
     user: dict = Depends(require_editor_html),
     page: int = Query(1, ge=1),
     size: int = Query(DEFAULT_PAGE_SIZE, ge=1, le=100),
+    ordering: str | None = Query(None),
     q: str | None = Query(None),
     category: str | None = Query(None),
     available: str | None = Query(None),
@@ -582,6 +630,7 @@ async def delete_book(
             base_path=base_path,
             page=page_num,
             size=size,
+            ordering=ordering,
             q=q,
             category=category,
             available=available,

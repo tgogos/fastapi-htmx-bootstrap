@@ -131,4 +131,39 @@
       event.detail.headers["X-CSRF-Token"] = token;
     }
   });
+
+  function syncListFiltersFromUrl() {
+    var params = new URLSearchParams(window.location.search);
+    document.querySelectorAll("form[data-list-filters] input[type='hidden']").forEach(function (input) {
+      var name = input.getAttribute("name");
+      if (!name || name === "page" || name === "csrf_token" || !params.has(name)) {
+        return;
+      }
+      input.value = params.get(name);
+    });
+  }
+
+  document.body.addEventListener("change", function (event) {
+    var el = event.target;
+    if (!el || !el.matches || !el.matches("[data-list-page-size]")) {
+      return;
+    }
+    var opt = el.selectedOptions && el.selectedOptions[0];
+    var url = opt && opt.getAttribute("data-url");
+    if (!url || !window.htmx) {
+      return;
+    }
+    document.querySelectorAll("form[data-list-filters] input[type='hidden'][name='size']").forEach(function (input) {
+      input.value = el.value;
+    });
+    htmx.ajax("GET", url, {
+      target: el.getAttribute("data-panel-target"),
+      swap: "innerHTML",
+      pushUrl: url,
+      indicator: el.getAttribute("data-indicator"),
+    });
+  });
+
+  document.body.addEventListener("htmx:pushedIntoHistory", syncListFiltersFromUrl);
+  syncListFiltersFromUrl();
 })();

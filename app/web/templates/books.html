@@ -20,12 +20,17 @@
   <div class="card-body">
     <h2 class="h5 card-title">Add book</h2>
     <form
+      data-list-filters
       hx-post="/ui/books"
       hx-target="#books-panel"
       hx-swap="innerHTML"
       hx-indicator="#books-indicator"
     >
       <input type="hidden" name="csrf_token" value="{{ csrf_token }}">
+      <input type="hidden" name="page" value="1">
+      <input type="hidden" name="size" value="{{ size }}">
+      <input type="hidden" name="ordering" value="{{ ordering }}">
+      <input type="hidden" name="q" value="{{ q }}">
       <div class="row g-3">
         <div class="col-md-6">
           <label class="form-label" for="book-title">Title</label>
@@ -82,6 +87,8 @@
 {% endif %}
 
 <form
+  id="books-filters"
+  data-list-filters
   class="row g-2 align-items-end mb-3"
   method="get"
   action="/ui/books"
@@ -94,6 +101,7 @@
 >
   <input type="hidden" name="page" value="1">
   <input type="hidden" name="size" value="{{ size }}">
+  <input type="hidden" name="ordering" value="{{ ordering }}">
   <div class="col-md-6">
     <label class="form-label" for="books-q">Search</label>
     <input

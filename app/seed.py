@@ -28,7 +28,7 @@ SAMPLE_USERS: list[tuple[str, str, str]] = [
     ("editor", SAMPLE_PASSWORD, "editor"),
 ]
 
-# More than the UI default page size (10) so pagination is obvious (~3 pages).
+# About 100 well-known titles so page size and column sorting are obvious.
 SAMPLE_BOOKS: list[dict[str, object]] = [
     {
         "title": "Pride and Prejudice",
@@ -200,6 +200,121 @@ SAMPLE_BOOKS: list[dict[str, object]] = [
     },
 ]
 
+# Extra titles so the catalog is about 100. Category is set explicitly.
+MORE_BOOKS: list[dict[str, object]] = [
+    {"title": "Don Quixote", "author": "Miguel de Cervantes", "year": 1605, "category": "fiction"},
+    {"title": "Hamlet", "author": "William Shakespeare", "year": 1603, "category": "fiction"},
+    {"title": "The Divine Comedy", "author": "Dante Alighieri", "year": 1320, "category": "fiction"},
+    {"title": "Candide", "author": "Voltaire", "year": 1759, "category": "fiction"},
+    {"title": "The Brothers Karamazov", "author": "Fyodor Dostoevsky", "year": 1880, "category": "fiction"},
+    {"title": "Anna Karenina", "author": "Leo Tolstoy", "year": 1878, "category": "fiction"},
+    {"title": "War and Peace", "author": "Leo Tolstoy", "year": 1869, "category": "fiction"},
+    {"title": "Madame Bovary", "author": "Gustave Flaubert", "year": 1857, "category": "fiction"},
+    {"title": "Les Misérables", "author": "Victor Hugo", "year": 1862, "category": "fiction"},
+    {"title": "Great Expectations", "author": "Charles Dickens", "year": 1861, "category": "fiction"},
+    {"title": "A Tale of Two Cities", "author": "Charles Dickens", "year": 1859, "category": "fiction"},
+    {"title": "The Adventures of Huckleberry Finn", "author": "Mark Twain", "year": 1884, "category": "fiction"},
+    {"title": "The Picture of Dorian Gray", "author": "Oscar Wilde", "year": 1890, "category": "fiction"},
+    {"title": "Heart of Darkness", "author": "Joseph Conrad", "year": 1899, "category": "fiction"},
+    {"title": "The Metamorphosis", "author": "Franz Kafka", "year": 1915, "category": "fiction"},
+    {"title": "To the Lighthouse", "author": "Virginia Woolf", "year": 1927, "category": "fiction"},
+    {"title": "The Sun Also Rises", "author": "Ernest Hemingway", "year": 1926, "category": "fiction"},
+    {"title": "The Old Man and the Sea", "author": "Ernest Hemingway", "year": 1952, "category": "fiction"},
+    {"title": "Their Eyes Were Watching God", "author": "Zora Neale Hurston", "year": 1937, "category": "fiction"},
+    {"title": "The Grapes of Wrath", "author": "John Steinbeck", "year": 1939, "category": "fiction"},
+    {"title": "Of Mice and Men", "author": "John Steinbeck", "year": 1937, "category": "fiction"},
+    {"title": "Catch-22", "author": "Joseph Heller", "year": 1961, "category": "fiction"},
+    {"title": "Slaughterhouse-Five", "author": "Kurt Vonnegut", "year": 1969, "category": "fiction"},
+    {"title": "The Catcher in the Rye", "author": "J. D. Salinger", "year": 1951, "category": "fiction"},
+    {"title": "On the Road", "author": "Jack Kerouac", "year": 1957, "category": "fiction"},
+    {"title": "Song of Solomon", "author": "Toni Morrison", "year": 1977, "category": "fiction"},
+    {"title": "The Color Purple", "author": "Alice Walker", "year": 1982, "category": "fiction"},
+    {"title": "White Teeth", "author": "Zadie Smith", "year": 2000, "category": "fiction"},
+    {"title": "Never Let Me Go", "author": "Kazuo Ishiguro", "year": 2005, "category": "fiction"},
+    {"title": "The Remains of the Day", "author": "Kazuo Ishiguro", "year": 1989, "category": "fiction"},
+    {"title": "Midnight's Children", "author": "Salman Rushdie", "year": 1981, "category": "fiction"},
+    {"title": "The God of Small Things", "author": "Arundhati Roy", "year": 1997, "category": "fiction"},
+    {"title": "Half of a Yellow Sun", "author": "Chimamanda Ngozi Adichie", "year": 2006, "category": "fiction"},
+    {"title": "The Kite Runner", "author": "Khaled Hosseini", "year": 2003, "category": "fiction"},
+    {"title": "Pachinko", "author": "Min Jin Lee", "year": 2017, "category": "fiction"},
+    {"title": "Love in the Time of Cholera", "author": "Gabriel García Márquez", "year": 1985, "category": "fiction"},
+    {"title": "Pedro Páramo", "author": "Juan Rulfo", "year": 1955, "category": "fiction"},
+    {"title": "The Master and Margarita", "author": "Mikhail Bulgakov", "year": 1967, "category": "fiction"},
+    {"title": "Norwegian Wood", "author": "Haruki Murakami", "year": 1987, "category": "fiction"},
+    {"title": "Foundation", "author": "Isaac Asimov", "year": 1951, "category": "scifi"},
+    {"title": "I, Robot", "author": "Isaac Asimov", "year": 1950, "category": "scifi"},
+    {"title": "The Martian Chronicles", "author": "Ray Bradbury", "year": 1950, "category": "scifi"},
+    {"title": "Do Androids Dream of Electric Sheep?", "author": "Philip K. Dick", "year": 1968, "category": "scifi"},
+    {"title": "The Lathe of Heaven", "author": "Ursula K. Le Guin", "year": 1971, "category": "scifi"},
+    {"title": "Snow Crash", "author": "Neal Stephenson", "year": 1992, "category": "scifi"},
+    {"title": "Ancillary Justice", "author": "Ann Leckie", "year": 2013, "category": "scifi"},
+    {"title": "The Fifth Season", "author": "N. K. Jemisin", "year": 2015, "category": "scifi"},
+    {"title": "Station Eleven", "author": "Emily St. John Mandel", "year": 2014, "category": "scifi"},
+    {"title": "The Hitchhiker's Guide to the Galaxy", "author": "Douglas Adams", "year": 1979, "category": "scifi"},
+    {"title": "Ender's Game", "author": "Orson Scott Card", "year": 1985, "category": "scifi"},
+    {"title": "The War of the Worlds", "author": "H. G. Wells", "year": 1898, "category": "scifi"},
+    {"title": "A Wizard of Earthsea", "author": "Ursula K. Le Guin", "year": 1968, "category": "fantasy"},
+    {"title": "The Lion, the Witch and the Wardrobe", "author": "C. S. Lewis", "year": 1950, "category": "fantasy"},
+    {"title": "The Fellowship of the Ring", "author": "J. R. R. Tolkien", "year": 1954, "category": "fantasy"},
+    {"title": "American Gods", "author": "Neil Gaiman", "year": 2001, "category": "fantasy"},
+    {"title": "The Name of the Wind", "author": "Patrick Rothfuss", "year": 2007, "category": "fantasy"},
+    {"title": "Jonathan Strange & Mr Norrell", "author": "Susanna Clarke", "year": 2004, "category": "fantasy"},
+    {"title": "Circe", "author": "Madeline Miller", "year": 2018, "category": "fantasy"},
+    {"title": "The Murder of Roger Ackroyd", "author": "Agatha Christie", "year": 1926, "category": "mystery"},
+    {"title": "Murder on the Orient Express", "author": "Agatha Christie", "year": 1934, "category": "mystery"},
+    {"title": "The Maltese Falcon", "author": "Dashiell Hammett", "year": 1930, "category": "mystery"},
+    {"title": "The Big Sleep", "author": "Raymond Chandler", "year": 1939, "category": "mystery"},
+    {"title": "The Hound of the Baskervilles", "author": "Arthur Conan Doyle", "year": 1902, "category": "mystery"},
+    {"title": "In Cold Blood", "author": "Truman Capote", "year": 1966, "category": "nonfiction"},
+    {"title": "The Diary of a Young Girl", "author": "Anne Frank", "year": 1947, "category": "nonfiction"},
+    {"title": "A Brief History of Time", "author": "Stephen Hawking", "year": 1988, "category": "nonfiction"},
+    {"title": "Sapiens", "author": "Yuval Noah Harari", "year": 2011, "category": "nonfiction"},
+    {"title": "Silent Spring", "author": "Rachel Carson", "year": 1962, "category": "nonfiction"},
+    {"title": "Walden", "author": "Henry David Thoreau", "year": 1854, "category": "nonfiction"},
+    {"title": "The Prince", "author": "Niccolò Machiavelli", "year": 1532, "category": "nonfiction"},
+    {"title": "A Room of One's Own", "author": "Virginia Woolf", "year": 1929, "category": "nonfiction"},
+    {"title": "The Fire Next Time", "author": "James Baldwin", "year": 1963, "category": "nonfiction"},
+    {"title": "Long Walk to Freedom", "author": "Nelson Mandela", "year": 1994, "category": "biography"},
+    {"title": "The Autobiography of Malcolm X", "author": "Malcolm X", "year": 1965, "category": "biography"},
+    {"title": "Educated", "author": "Tara Westover", "year": 2018, "category": "biography"},
+    {"title": "Becoming", "author": "Michelle Obama", "year": 2018, "category": "biography"},
+    {"title": "The Wright Brothers", "author": "David McCullough", "year": 2015, "category": "biography"},
+    {"title": "Meditations", "author": "Marcus Aurelius", "year": 180, "category": "other"},
+]
+
+SAMPLE_BOOKS.extend(MORE_BOOKS)
+
+_TITLE_CATEGORY: dict[str, str] = {
+    "Pride and Prejudice": "fiction",
+    "The Hobbit": "fantasy",
+    "Dune": "scifi",
+    "Neuromancer": "scifi",
+    "The Left Hand of Darkness": "scifi",
+    "Kindred": "scifi",
+    "The Name of the Rose": "mystery",
+    "Invisible Cities": "fiction",
+    "Frankenstein": "fiction",
+    "Dracula": "fiction",
+    "Moby-Dick": "fiction",
+    "Jane Eyre": "fiction",
+    "Wuthering Heights": "fiction",
+    "1984": "fiction",
+    "Brave New World": "scifi",
+    "Fahrenheit 451": "scifi",
+    "The Handmaid's Tale": "fiction",
+    "Beloved": "fiction",
+    "One Hundred Years of Solitude": "fiction",
+    "The Stranger": "fiction",
+    "Crime and Punishment": "fiction",
+    "The Trial": "fiction",
+    "To Kill a Mockingbird": "fiction",
+    "The Great Gatsby": "fiction",
+    "Mrs Dalloway": "fiction",
+    "Things Fall Apart": "fiction",
+    "The Dispossessed": "scifi",
+    "Hyperion": "scifi",
+}
+
 async def seed_sample_users() -> list[str]:
     """Create sample role users if missing. Returns usernames created."""
     created: list[str] = []
@@ -216,9 +331,13 @@ _CATEGORY_CYCLE = sorted(BOOK_CATEGORIES)
 
 def _sample_meta(index: int, book: dict[str, object]) -> dict[str, object]:
     """Fill category / ISBN / pages / availability for demo variety."""
+    title = str(book["title"])
+    category = book.get("category") or _TITLE_CATEGORY.get(title)
+    if category not in BOOK_CATEGORIES:
+        category = _CATEGORY_CYCLE[index % len(_CATEGORY_CYCLE)]
     return {
         **book,
-        "category": _CATEGORY_CYCLE[index % len(_CATEGORY_CYCLE)],
+        "category": category,
         "isbn": f"978-{1000000000 + index:010d}",
         "page_count": 180 + (index * 37) % 700,
         "available": index % 5 != 0,
@@ -298,6 +417,21 @@ async def seed_sample_books() -> tuple[int, int]:
             )
             await conn.commit()
             enriched += 1
+            continue
+
+        conn = get_connection()
+        async with conn.execute(
+            "SELECT category FROM books WHERE id = ?",
+            (book_id,),
+        ) as cursor:
+            row = await cursor.fetchone()
+        if row is not None and row["category"] != book["category"]:
+            await conn.execute(
+                "UPDATE books SET category = ? WHERE id = ?",
+                (str(book["category"]), book_id),
+            )
+            await conn.commit()
+            enriched += 1
 
     return created, enriched
 
@@ -321,7 +455,7 @@ async def run_seed() -> None:
         if books_created or books_enriched:
             print(
                 f"✅ Books seed: {books_created} created, {books_enriched} enriched "
-                f"({len(SAMPLE_BOOKS)} samples; UI page size is 10)"
+                f"({len(SAMPLE_BOOKS)} samples; default UI page size is 10)"
             )
         else:
             print("ℹ️  All sample books already present with metadata")

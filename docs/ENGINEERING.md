@@ -44,7 +44,7 @@ The browser UI is the Bootstrap 5 admin shell from the static starter (navbar, s
 
 The sidebar has two groups. **App** is the product: Dashboard, Books, Search books, and Staff (`/ui/admin/users`, admin only). **Samples** is the original Bootstrap page set (users, forms, tables, components, cheatsheet, settings, blank, headers, sidebars). Sample pages are copy sources, not the books domain. The Users sample stays separate from Staff. Move a link from Samples to App when that page starts reading or writing application data.
 
-`app/web/static/css/admin.css` stays the shell layout file. `app/web/static/css/app.css` is only the HTMX indicator. `app/web/static/js/admin.js` is the shell (theme, palette, profile, hash nav, form validation), with hash highlighting keyed off the `/ui/...` path instead of `*.html` filenames. `app/web/static/js/app.js` is the HTMX island (Bootstrap confirm modal, toasts, CSRF header).
+`app/web/static/css/admin.css` stays the shell layout file. `app/web/static/css/app.css` is the HTMX indicator plus the books table sort caret. `app/web/static/js/admin.js` is the shell (theme, palette, profile, hash nav, form validation), with hash highlighting keyed off the `/ui/...` path instead of `*.html` filenames. `app/web/static/js/app.js` is the HTMX island (Bootstrap confirm modal, toasts, CSRF header, page-size select).
 
 To add a page: copy `templates/pages/blank.html`, add a row to `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link in `partials/sidebar.html` under App or Samples with an `active` key. Do not introduce a client-side HTML include loader.
 
@@ -74,7 +74,7 @@ Enforcement is always on the server (`require_user` / `require_editor` / `requir
 
 The seeded demo user is an **admin** (`DEMO_USERNAME` / `DEMO_PASSWORD`).
 
-Startup only ensures that admin when `users` is empty. Richer demo data (sample `viewer` / `editor` accounts and books) is opt-in via `python -m app.seed` / `make seed` — idempotent (skips existing usernames; inserts only missing sample book titles). Sample list is larger than the UI page size (10) so pagination is easy to exercise.
+Startup only ensures that admin when `users` is empty. Richer demo data (sample `viewer` / `editor` accounts and books) is opt-in via `python -m app.seed` / `make seed` — idempotent (skips existing usernames). The sample catalog is about 100 well-known titles so page size and column sorting are easy to exercise. Re-running the seed inserts missing titles and refreshes the shelf category on titles it already knows. Other books are left alone.
 
 ## Code style (primary path)
 
@@ -131,8 +131,8 @@ See **UI architecture** for the HTML-first contract. Patterns below are what thi
 - **`HX-Request` dual response** — one list route returns the full page or `partials/books_table.html`.
 - **Search** — `q` on title/author/ISBN with debounce + `hx-push-url`. Keep the search/filter form **outside** the HTMX swap target so inputs are not replaced (focus stays while typing).
 - **Advanced filters** — `/ui/books/search`: selects + debounced text update live; year inputs update on `change`/explicit Apply (avoid mid-typing requests). Active filter chips render inside the results partial. Delete keeps filter query params via `return_to`.
-- **Pagination** — `page` / `size` query params, same dual-response + push URL; swaps only the results panel.
-- **Indicator** — shared `#books-indicator` via `hx-indicator` (search, pagination, create). CSS-only spinner; HTMX toggles `.htmx-request` / opacity. Keep the indicator outside the swap target.
+- **Pagination and sort** — URL is the source of truth: `page`, `size` (`10`, `25`, `50`, `100`; default 10), and `ordering` (allowlisted column, prefix `-` for descending; default `title`). Sort links and the page-size control swap `#books-panel` with `innerHTML` and `hx-push-url`. Filter forms keep a hidden `ordering` so a search does not drop the sort. Unknown `ordering` values fall back to the default. Same contract on `/api/books`. Swaps stay `innerHTML`; do not add Idiomorph for this.
+- **Indicator** — shared `#books-indicator` via `hx-indicator` (search, pagination, sort, create). CSS-only spinner; HTMX toggles `.htmx-request` / opacity. Keep the indicator outside the swap target.
 - Progressive enhancement: pagination links keep usable `href`s.
 - **Confirm modal** — Bootstrap modal + small JS (`app/web/static/js/app.js`); delete buttons use `hx-trigger="confirmed-delete"` after the user confirms (no `window.confirm`).
 - **Toasts** — Bootstrap toasts; server sets `HX-Trigger: {"showToast": {...}}` (e.g. after delete).

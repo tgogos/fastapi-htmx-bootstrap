@@ -111,6 +111,44 @@ class TestBooksApi:
         assert by_isbn.status_code == 200
         assert by_isbn.json()["total_count"] == 1
 
+    def test_list_ordering(self, auth_client: TestClient):
+        headers = session_csrf_headers(auth_client)
+        for title, year in (("Zebra Tales", 1999), ("Aardvark Tales", 2001)):
+            assert (
+                auth_client.post(
+                    f"{API_BOOKS}/",
+                    json={"title": title, "author": "Sorter", "year": year},
+                    headers=headers,
+                ).status_code
+                == 201
+            )
+
+        asc = auth_client.get(f"{API_BOOKS}/", params={"ordering": "title", "q": "Tales"})
+        assert [item["title"] for item in asc.json()["items"]] == [
+            "Aardvark Tales",
+            "Zebra Tales",
+        ]
+        desc = auth_client.get(
+            f"{API_BOOKS}/", params={"ordering": "-title", "q": "Tales"}
+        )
+        assert [item["title"] for item in desc.json()["items"]] == [
+            "Zebra Tales",
+            "Aardvark Tales",
+        ]
+        unknown = auth_client.get(
+            f"{API_BOOKS}/", params={"ordering": "drop table", "q": "Tales"}
+        )
+        assert unknown.status_code == 200
+        assert unknown.json()["items"][0]["title"] == "Aardvark Tales"
+
+        by_year = auth_client.get(
+            f"{API_BOOKS}/", params={"ordering": "-year", "q": "Tales"}
+        )
+        assert [item["title"] for item in by_year.json()["items"]] == [
+            "Aardvark Tales",
+            "Zebra Tales",
+        ]
+
 
 class TestRoles:
     def test_viewer_cannot_write(self, client: TestClient, sample_book_data: dict):
@@ -211,6 +249,14 @@ class TestAuthWeb:
         response = auth_client.get("/ui/books")
         assert response.status_code == 200
         assert "Books" in response.text
+        assert 'aria-sort="ascending"' in response.text
+        assert "table-sort-link" in response.text
+        assert 'aria-label="Rows per page"' in response.text
+        assert "ordering=title" in response.text
+
+        resorted = auth_client.get("/ui/books", params={"ordering": "-author"})
+        assert 'aria-sort="descending"' in resorted.text
+        assert "table-sort-link--desc" in resorted.text
 
     def test_dashboard_requires_login(self, client: TestClient):
         anonymous = client.get("/ui/dashboard", follow_redirects=False)

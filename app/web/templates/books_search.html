@@ -18,6 +18,7 @@
 
 <form
   id="books-filters"
+  data-list-filters
   class="row g-3 mb-4"
   method="get"
   action="/ui/books/search"
@@ -30,6 +31,7 @@
 >
   <input type="hidden" name="page" value="1">
   <input type="hidden" name="size" value="{{ size }}">
+  <input type="hidden" name="ordering" value="{{ ordering }}">
 
   <div class="col-md-4">
     <label class="form-label" for="filter-q">Text</label>
