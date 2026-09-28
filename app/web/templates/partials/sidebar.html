@@ -19,7 +19,8 @@
         <div class="offcanvas-body d-flex flex-column overflow-y-auto">
           <div class="px-3 py-3 d-flex flex-column gap-4">
           <nav aria-label="App">
-            <h2 class="admin-nav-label">App</h2>
+            <p class="admin-nav-label">App</p>
+            <hr>
             <ul class="nav nav-pills flex-column gap-1 mb-0">
                 <li class="nav-item">
                   <a class="nav-link{% if active == 'dashboard' %} active{% endif %}" {% if active == 'dashboard' %}aria-current="page"{% endif %} href="/ui/dashboard">
@@ -50,7 +51,8 @@
             </ul>
           </nav>
           <nav aria-label="Samples">
-            <h2 class="admin-nav-label">Samples</h2>
+            <p class="admin-nav-label">Samples</p>
+            <hr>
             <ul class="nav nav-pills flex-column gap-1 mb-0">
                 <li class="nav-item">
                   <a class="nav-link{% if active == 'users' %} active{% endif %}" {% if active == 'users' %}aria-current="page"{% endif %} href="/ui/users">
