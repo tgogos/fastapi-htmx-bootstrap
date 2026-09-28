@@ -67,7 +67,7 @@ Working data pages use the same shell:
 | Search books | `/ui/books/search` |
 | Staff (admin) | `/ui/admin/users` |
 
-To add a page, copy `app/web/templates/pages/blank.html`, register it in `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link in `app/web/templates/partials/sidebar.html`.
+The sidebar is split into **App** (the product) and **Samples** (the original Bootstrap pages). To add a page, copy `app/web/templates/pages/blank.html`, register it in `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link under the matching group in `app/web/templates/partials/sidebar.html`.
 
 ## Auth in brief
 

@@ -42,11 +42,11 @@ The browser UI is the Bootstrap 5 admin shell from the static starter (navbar, s
 
 `templates/layout.html` is the shell. Shared pieces are `partials/navbar.html`, `partials/sidebar.html`, and `partials/footer.html`. Operational pages extend the layout and replace only `{% block content %}`. Header and sidebar specimen pages keep their own chrome (`templates/gallery/`) because that chrome is the specimen; they still include the shared sidebar or navbar.
 
-Specimen routes (dashboard, users, forms, tables, components, cheatsheet, settings, blank, headers, sidebars) are the original page set, served under `/ui/...`. They are reference pages, not the books domain. Books CRUD stays at `/ui/books` and `/ui/books/search`. Staff role management stays at `/ui/admin/users` (admin only) so it does not replace the Users specimen.
+The sidebar has two groups. **App** is the product: Dashboard, Books, Search books, and Staff (`/ui/admin/users`, admin only). **Samples** is the original Bootstrap page set (users, forms, tables, components, cheatsheet, settings, blank, headers, sidebars). Sample pages are copy sources, not the books domain. The Users sample stays separate from Staff. Move a link from Samples to App when that page starts reading or writing application data.
 
 `app/web/static/css/admin.css` stays the shell layout file. `app/web/static/css/app.css` is only the HTMX indicator. `app/web/static/js/admin.js` is the shell (theme, palette, profile, hash nav, form validation), with hash highlighting keyed off the `/ui/...` path instead of `*.html` filenames. `app/web/static/js/app.js` is the HTMX island (Bootstrap confirm modal, toasts, CSRF header).
 
-To add a page: copy `templates/pages/blank.html`, add a row to `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link in `partials/sidebar.html` with an `active` key. Do not introduce a client-side HTML include loader.
+To add a page: copy `templates/pages/blank.html`, add a row to `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link in `partials/sidebar.html` under App or Samples with an `active` key. Do not introduce a client-side HTML include loader.
 
 ## Product shape
 

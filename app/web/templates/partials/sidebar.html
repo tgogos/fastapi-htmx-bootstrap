@@ -17,8 +17,10 @@
           ></button>
         </div>
         <div class="offcanvas-body d-flex flex-column overflow-y-auto">
-          <nav class="px-3 py-3" aria-label="Sidebar">
-            <ul class="nav nav-pills flex-column gap-1">
+          <div class="px-3 py-3 d-flex flex-column gap-4">
+          <nav aria-label="App">
+            <h2 class="admin-nav-label">App</h2>
+            <ul class="nav nav-pills flex-column gap-1 mb-0">
                 <li class="nav-item">
                   <a class="nav-link{% if active == 'dashboard' %} active{% endif %}" {% if active == 'dashboard' %}aria-current="page"{% endif %} href="/ui/dashboard">
                     <i class="bi bi-speedometer2" aria-hidden="true"></i>
@@ -45,7 +47,11 @@
                   </a>
                 </li>
                 {% endif %}
-
+            </ul>
+          </nav>
+          <nav aria-label="Samples">
+            <h2 class="admin-nav-label">Samples</h2>
+            <ul class="nav nav-pills flex-column gap-1 mb-0">
                 <li class="nav-item">
                   <a class="nav-link{% if active == 'users' %} active{% endif %}" {% if active == 'users' %}aria-current="page"{% endif %} href="/ui/users">
                     <i class="bi bi-people" aria-hidden="true"></i>
@@ -228,6 +234,7 @@
                 </li>
             </ul>
           </nav>
+          </div>
         </div>
       </div>
     </aside>

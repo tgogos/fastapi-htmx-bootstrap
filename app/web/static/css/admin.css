@@ -82,6 +82,16 @@ body {
  * Sidebar inset spacing therefore lives on the inner <nav>, not here.
  */
 
+.admin-nav-label {
+  margin: 0 0 0.25rem;
+  padding-inline: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bs-secondary-color);
+}
+
 .admin-sidebar .nav-link {
   display: flex;
   align-items: center;

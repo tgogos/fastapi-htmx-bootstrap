@@ -222,6 +222,8 @@ class TestAuthWeb:
         assert page.status_code == 200
         assert "Dashboard" in page.text
         assert 'href="/ui/books"' in page.text
+        assert 'aria-label="App"' in page.text
+        assert 'aria-label="Samples"' in page.text
         assert "bootstrap.min.css" in page.text
 
         users = auth_client.get("/ui/users")
