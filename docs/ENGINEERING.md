@@ -9,7 +9,16 @@ This file is the source of truth for architecture and conventions. When a decisi
 - Mature shape (clear modules, auth, tests, Docker) without shortcuts that fight growth.
 - One primary full-stack path; optional demos stay thin and removable.
 - Async-first; raw SQL (no ORM); Pydantic at the HTTP edge only.
-- **HTML-first / HTMX** for the browser UI; `/api` JSON for machines. Not an SPA.
+- **HTML-first / HTMX** for the browser UI; `/api` JSON for machines. Not an SPA. HTMX is pinned to **4.0.0** in `app/web/static/js/htmx.min.js`. Teach and copy from [four.htmx.org](https://four.htmx.org/docs).
+
+### HTMX 4
+
+Books markup already puts `hx-get`, `hx-target`, and `hx-swap` on the element that makes the request, so those buttons do not rely on attribute inheritance. These parts are specific to 4.0.0:
+
+- `app.js` listens for `htmx:config:request` and writes the CSRF token on `event.detail.ctx.request.headers`. The 2.x names `htmx:configRequest` and `event.detail.headers` do not fire.
+- The same file listens for `htmx:after:history:push` (the 2.x name was `htmx:pushedIntoHistory`). The page-size control calls `htmx.ajax` with `push`, and the select carries `hx-indicator`. `pushUrl` and `indicator` are not `htmx.ajax` arguments in 4.0.0.
+- Back and Forward refetch the URL and still send `HX-Request`. `_wants_books_partial` returns the full page when `HX-History-Restore-Request` is set, and the table fragment otherwise. `/ui/books` and `/ui/books/search` both use it.
+- HTTP 4xx and 5xx responses swap into the target. A books form that returns `400` with table HTML shows that HTML.
 
 ## UI architecture (HTML-first)
 
@@ -128,7 +137,7 @@ Books include scalars (`category`, `isbn`, `page_count`, `available`) and `added
 
 See **UI architecture** for the HTML-first contract. Patterns below are what this app actually ships (Bootstrap shell + `app.js`). Do not add Idiomorph, `hx-boost` shells, or OOB toasts unless they land in code and this file in the same change.
 
-- **`HX-Request` dual response** — one list route returns the full page or `partials/books_table.html`.
+- **`HX-Request` dual response** — one list route returns the full page or `partials/books_table.html`. A history restore (`HX-History-Restore-Request`) gets the full page even though it also sends `HX-Request`.
 - **Search** — `q` on title/author/ISBN with debounce + `hx-push-url`. Keep the search/filter form **outside** the HTMX swap target so inputs are not replaced (focus stays while typing).
 - **Advanced filters** — `/ui/books/search`: selects + debounced text update live; year inputs update on `change`/explicit Apply (avoid mid-typing requests). Active filter chips render inside the results partial. Delete keeps filter query params via `return_to`.
 - **Pagination and sort** — URL is the source of truth: `page`, `size` (`10`, `25`, `50`, `100`; default 10), and `ordering` (allowlisted column, prefix `-` for descending; default `title`). Sort links and the page-size control swap `#books-panel` with `innerHTML` and `hx-push-url`. Filter forms keep a hidden `ordering` so a search does not drop the sort. Unknown `ordering` values fall back to the default. Same contract on `/api/books`. Swaps stay `innerHTML`; do not add Idiomorph for this.
