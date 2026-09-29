@@ -47,7 +47,7 @@ uv run pytest
 
 ## UI
 
-The shell is `app/web/templates/layout.html` (navbar, sidebar, footer). Sample pages keep their own routes:
+The shell is `app/ui/templates/layout.html` (navbar, sidebar, footer). Sample pages keep their own routes:
 
 | Page | Path |
 |------|------|
@@ -67,7 +67,7 @@ Working data pages use the same shell:
 | Search books | `/ui/books/search` |
 | Staff (admin) | `/ui/admin/users` |
 
-The sidebar is split into **App** (the product) and **Samples** (the original Bootstrap pages). To add a page, copy `app/web/templates/pages/blank.html`, register it in `SHELL_PAGES` in `app/web/pages_routes.py`, and add a sidebar link under the matching group in `app/web/templates/partials/sidebar.html`.
+The sidebar is split into **App** (the product) and **Samples** (the original Bootstrap pages). To add a page, copy `app/ui/templates/pages/blank.html`, register it in `SHELL_PAGES` in `app/ui/pages_routes.py`, and add a sidebar link under the matching group in `app/ui/templates/partials/sidebar.html`.
 
 ## Auth in brief
 
@@ -87,7 +87,7 @@ app/
   auth/     # passwords, users, tokens, deps
   db/       # SQLite connection + schema (primary)
   routes/   # JSON API (/api/..., demos)
-  web/      # HTML/HTMX templates + Bootstrap static
+  ui/       # HTML/HTMX templates + Bootstrap static
   models/   # Pydantic schemas
   core/     # settings + logging
 docs/
