@@ -144,7 +144,7 @@ See **UI architecture** for the HTML-first contract. Patterns below are what thi
 - **Indicator** — shared `#books-indicator` via `hx-indicator` (search, pagination, sort, create). CSS-only spinner; HTMX toggles `.htmx-request` / opacity. Keep the indicator outside the swap target.
 - Progressive enhancement: pagination links keep usable `href`s.
 - **Confirm modal** — Bootstrap modal + small JS (`app/ui/static/js/app.js`); delete buttons use `hx-trigger="confirmed-delete"` after the user confirms (no `window.confirm`).
-- **Toasts** — Bootstrap toasts; server sets `HX-Trigger: {"showToast": {...}}` (e.g. after delete).
+- **Toasts** — Bootstrap toasts; server sets `HX-Trigger: {"showToast": {...}}` after a successful save or delete.
 
 ## Authentication
 
