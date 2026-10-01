@@ -64,6 +64,9 @@ Working data pages use the same shell:
 | Page | Path |
 |------|------|
 | Books | `/ui/books` |
+| Book | `/ui/books/{id}` |
+| New book | `/ui/books/new` |
+| Edit book | `/ui/books/{id}/edit` |
 | Search books | `/ui/books/search` |
 | Staff (admin) | `/ui/admin/users` |
 

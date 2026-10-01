@@ -103,7 +103,7 @@ Or use a Bearer token in `Authorization` (no CSRF header). Prefer Bearer for non
 
 ```
 /auth/login, /auth/logout     Browser session (HTML); CSRF on POST
-/ui/books                     HTMX books UI; session + CSRF on mutations
+/ui/books, /ui/books/{id}    Books list and book pages; session + CSRF on mutations
 /ui/admin/users               Admin-only staff page
 POST   /api/auth/token        Issue Bearer token
 DELETE /api/auth/token        Revoke current Bearer token
