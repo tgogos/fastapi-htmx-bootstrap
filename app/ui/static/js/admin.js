@@ -54,11 +54,11 @@
 
   const getPreferredPalette = () => {
     const storedPalette = getStoredPalette()
-    return palettes.has(storedPalette) ? storedPalette : 'default'
+    return palettes.has(storedPalette) ? storedPalette : 'grey'
   }
 
   const setPalette = palette => {
-    const next = palettes.has(palette) ? palette : 'default'
+    const next = palettes.has(palette) ? palette : 'grey'
     document.documentElement.setAttribute('data-admin-palette', next)
     // Night is dark-adaptation only; keep Bootstrap in dark mode while it is active.
     setTheme(getPreferredTheme())
@@ -168,7 +168,8 @@
       check.classList.remove('d-none')
     }
 
-    paletteSwitcher.setAttribute('aria-label', `Palette (${palette})`)
+    const paletteName = btnToActive.textContent.replace(/\s+/g, ' ').trim()
+    paletteSwitcher.setAttribute('aria-label', `Palette (${paletteName})`)
 
     if (focus) {
       paletteSwitcher.focus()
