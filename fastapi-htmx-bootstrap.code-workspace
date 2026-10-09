@@ -5,6 +5,9 @@
 		},
 		{
 			"path": "../htmx-bootstrap-tutorial"
+		},
+		{
+			"path": "../fastapi-htmx-starter"
 		}
 	],
 	"settings": {}
