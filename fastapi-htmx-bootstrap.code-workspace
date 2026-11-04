@@ -8,6 +8,9 @@
 		},
 		{
 			"path": "../fastapi-htmx-starter"
+		},
+		{
+			"path": "../fastapi-htmx-basecoat"
 		}
 	],
 	"settings": {}
