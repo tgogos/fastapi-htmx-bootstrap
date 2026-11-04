@@ -4,7 +4,7 @@ Server-driven admin UI: the FastAPI + HTMX backend (SQLite books, session/CSRF, 
 
 This is the [FastAPI HTMX starter](https://github.com/tgogos/fastapi-htmx-starter) with that shell in place of the Pico UI. The books API, session, and roles are the same.
 
-Browsers get HTML (Jinja + [Bootstrap 5.3](https://getbootstrap.com/) + [HTMX 4.0.0](https://four.htmx.org/docs)). Machines get `/api` with Bearer tokens. One user store, Docker Compose, pytest.
+Browsers get HTML (Jinja + [Bootstrap 5.3](https://getbootstrap.com/) + [HTMX 4.0.1](https://four.htmx.org/docs)). Machines get `/api` with Bearer tokens. One user store, Docker Compose, pytest.
 
 Architecture: [`docs/ENGINEERING.md`](docs/ENGINEERING.md).  
 Sessions, CSRF, and Bearer: [`docs/auth.md`](docs/auth.md).  
